@@ -23,7 +23,10 @@ fprintf(fpVTF,"*ELEMENTS 2\n%%NODES #2 \n%%BEAMS\n1 2\n\n");
 fprintf(fpVTF,"*GLVIEWGEOMETRY 1\n%%ELEMENTS\n1,2\n\n");
 
 //for å lese fra fil
-while (!feof(fpGNU)){
+while (1){
+  if( feof(fpGNU) ) {
+    break;
+  }
 
 fprintf(fpVTF,"*RESULTS %d\n",counter);
 fprintf(fpVTF,"%%DIMENSION 2\n");
