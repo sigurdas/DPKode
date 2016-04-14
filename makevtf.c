@@ -39,7 +39,7 @@ fscanf(fpGNU, "%lf %lf %lf %d %d %lf %lf %lf %lf",&tid,&error,&algout,&inp, &ref
 }//eo while
 
 
-fprintf(fpVTF,"GLVIEWVECTOR 1\n");
+fprintf(fpVTF,"*GLVIEWVECTOR 1\n");
 fprintf(fpVTF,"%%NAME \"POSITION\" \n");
 
 
