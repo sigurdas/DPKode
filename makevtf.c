@@ -13,7 +13,7 @@ double tid, p_value, i_value, d_value, algout, error, setservo;
 fscanf(fpGNU, "%lf %lf %lf %d %d %lf %lf %lf %lf",&tid,&error,&algout,&inp, &ref, &p_value, &i_value, &d_value, &setservo);
 
 startpos=inp;
-refmarker=(startpos-ref)*27/100;
+refmarker=((startpos-ref)*27/100)+5;
 
 fprintf(fpVTF,"*VTF-1.00\n\n");
 
