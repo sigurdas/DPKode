@@ -1,15 +1,15 @@
-//#pragma once
-
 #include"header.h"
 
-struct timespec tiem;
+//Declare timespec struct
+struct timespec tid;
 
 
 float gettime(void){
-  float ti;
-clock_gettime(CLOCK_MONOTONIC, &tiem);
-ti= tiem.tv_sec + pow(10, -9)*tiem.tv_nsec;
- return ti;
-}
+    float t;
 
-//fikse tiem, forklare hvorfor MONOTONIC, hva som kommer ut
+    //Gets time in seconds and nanoseconds, placed in struct
+    //Monotonic gets time from system start, to avoid sudden jumps in time
+    clock_gettime(CLOCK_MONOTONIC, &tid);
+    t= tid.tv_sec + pow(10, -9)*tid.tv_nsec;
+  return t;
+  }

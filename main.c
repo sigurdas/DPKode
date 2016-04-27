@@ -2,114 +2,72 @@
 
 void main()
 {
-  int startpos, refcm, ref , inp;//legg til counter
-  char stop;
-  double algout, error, p_value,i_value, d_value, setservo;
-  float dt = 0, t = 0, starttid;//legg til starttime
+  int STARTPOS, refcm, ref , inp;
+  char stop, refstr[2], *ptr;
+  double pidOut, error, pValue, iValue, dValue, setservo, filteredInp;
+  float dt = 0, t = 0, STARTTID = 0;
+  FILE *fpGNU;//Open file for datalogging
+  fpGNU = fopen("GNUres.dat", "w");
 
- FILE *fpGNU;
- fpGNU = fopen("GNUres.dat", "w");
-    if(fpGNU==NULL){
-        printf("FILE ERROR\n");
-          }
-
-  CPhidgetInterfaceKitHandle sensor = 0;
+  CPhidgetInterfaceKitHandle sensor = 0; //Create handels for Phidgets
   CPhidgetServoHandle servo = 0;
 
-  CPhidgetInterfaceKit_create(&sensor);
-  CPhidget_open((CPhidgetHandle)sensor, -1);
-	CPhidget_waitForAttachment((CPhidgetHandle)sensor, 20000);
+  initialize(&STARTPOS, &filteredInp, &sensor, &servo);
+  CPhidgetServo_setPosition (servo, 0, 120);
+  sleep(3);
 
-  CPhidgetInterfaceKit_getSensorValue(sensor, 0, &startpos);
+  printf("\nEnter wanted position from current position:\n");//Ask user for referance
+  scanf("%d",&refcm);
 
-  CPhidgetServo_create(&servo);
-  CPhidget_open((CPhidgetHandle)servo,-1);
+  t = gettime();//Aquire time
+  STARTTID = gettime();
+  initscr();//Start ncurses mode
+  cbreak();// Disable line buffering
+  printw("Press q or Q to end positioning, or press p to give new position from origin.\n");//Use printw in ncurses mode
 
+   while (1) {
+timeout(0);//Set waiting time for keystrokes to zero
+     ref= STARTPOS-refcm*100/27;//Calculate true referance from referance given in centimeters
 
-  printf("Enter wanted position from current position, startpos: %d\n", startpos);
-    scanf("%d",&refcm);
-   //ref= startpos-refcm*100/27;
+     CPhidgetInterfaceKit_getSensorValue(sensor, 0, &inp);//Get position from potiometer
 
+     filterInp(&inp, &filteredInp);
 
-   t = gettime();
-   starttid = gettime();
+     pidOut=pidRegulator(&ref, &t, &error, &pValue, &iValue, &dValue, &filteredInp); //calculate correction in PID controller
 
-//fprintf(fpGNU,"time error algout inp ref p_value i_value d_value setservo\n");
-initscr();//start ncurses mode
-timeout(0);//venter ikke på at man skriver
-cbreak();// slipp igjennom cmds som ctrl-c
+     setservo = correctPIDOutput(&pidOut);
 
-printw("Press q or Q to end positioning, or p to enter new pos\n");
+     CPhidgetServo_setPosition (servo, 0, setservo);//Set servo
 
+     t = gettime();//Update time
 
- while (1) { //!kbhit()
+     //printw("error %f\t pidOut:%f\t p_value:%f\t i_value:%f\t d_value:%f\t setservo:%f\r",error, pidOut, pValue, iValue, dValue, setservo);
+    // printw("inp:%d\t,ref:%d\t, STARTPOS:%d\t, refcm:%d\r", inp, ref, STARTPOS, refcm);
+     //fprintf(fpGNU,"%f %f %f %d %d %f %f %f %f %d\n", t-STARTTID, error, pidOut, inp, ref, pValue, iValue, dValue, setservo, refcm);//Print results to resultsfile
+     fprintf(fpGNU,"%f %f %f %d %d %f %f %f %f %d\n", t-STARTTID, error, pidOut, inp, ref, pValue, iValue, dValue, setservo, refcm);//Print results to resultsfile
 
+     stop = getch();//Check if user sends stop signal
+     if(stop == 'q'){
+            endwin();
+            printf("\nStopping\n");
+            break;
 
-        ref= startpos-refcm*100/27;
+     }//eo if
+          else if(stop == 'p') {
+            printf("\nEnter new Pos\n");
+            timeout(-1);//wait til user types position
+            getstr(refstr);
+            refcm=strtol(refstr,&ptr, 10);
+          }
 
-
-        CPhidgetInterfaceKit_getSensorValue(sensor, 0, &inp);
-        algout=pid_regulator(&inp, &ref, &startpos, &t, &error, &p_value, &i_value, &d_value);
-        //printf("startpos: %d, inp= %d, algout: %d \r ",startpos, inp, algout);
-
-        //gjøre negativ algout proposjonal,dvs hvis den passerer på 190 la neste verdi være 180ish
-              if(algout<0 && algout>=-62) {
-                      setservo=195+algout;
-                      }
-                      else if(algout+132>=195){
-                        setservo=195;
-                      }
-                      else if(algout<=-63){
-                        setservo=132;
-                      }
-                      else {
-                        setservo=algout+132;
-                      }
-
-        CPhidgetServo_setPosition (servo, 0, setservo);
-
-        t = gettime();
+    usleep(30000);  //"Wait for 0.1 sec//100000
+    }//end of while
 
 
+    //endwin();//End ncurses
+    printf("\nOut of while\n");
+  system("gnuplot -p 'GNUcmd.gp'");//Plot results in gnuplot
 
-        fprintf(fpGNU,"%f %f %f %d %d %f %f %f %f\n", t-starttid, error, algout, inp, ref, p_value, i_value, d_value, setservo);
+  closeDelete(sensor, servo, fpGNU);//Close and Delete phidget handles
 
-        stop = getch();
-        if(stop == 'q' || stop == 'Q'){
-                  printf("\nStopping\n");
-                  break;
-                }//eo if
-                //else if(stop == 'p'){
-                    //  printf("Enter new Pos\n");
-                    //  scanw("%d",&refcm);
-
-                //  }//eo if
-        // switch(stop) {
-          //  case 'q' :
-            //          printf("\nStopping\n");
-              //      break;
-                //      break;
-          //  case 'p' :
-                  //    printw("Enter new pos\n");
-                  //    scanw("%d",&refcm);
-
-
-        usleep(100000);
-  }//end of while
-      endwin();//end ncurses
-
-    CPhidgetServo_setPosition (servo, 0, 127);//skru av motor
-    fclose(fpGNU);
-    system("gnuplot -p 'GNUcmd.gp'");
-
-
-
-  CPhidget_close((CPhidgetHandle)sensor);
-  CPhidget_close((CPhidgetHandle)servo);
-  CPhidget_delete((CPhidgetHandle)servo);
-  CPhidget_delete((CPhidgetHandle)sensor);
-
-  printf("Alt stengt, lukker....\n");
-
-
-}//eofmain
+  }//eofmain

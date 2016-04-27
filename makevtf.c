@@ -13,7 +13,7 @@ double tid, p_value, i_value, d_value, algout, error, setservo;
 fscanf(fpGNU, "%lf %lf %lf %d %d %lf %lf %lf %lf",&tid,&error,&algout,&inp, &ref, &p_value, &i_value, &d_value, &setservo);
 
 startpos=inp;
-refmarker=((startpos-ref)*27/100)+5;
+refmarker=(startpos-ref)*27/100;
 
 fprintf(fpVTF,"*VTF-1.00\n\n");
 
@@ -40,7 +40,6 @@ fprintf(fpVTF,"25 110 0\n\n");
 
 //Nodes for referance marker
 fprintf(fpVTF,"*NODES 3\n");
-
 fprintf(fpVTF,"-25 %d 1\n", refmarker);
 fprintf(fpVTF,"-25 %d -1\n", refmarker);
 fprintf(fpVTF,"25 %d 1\n", refmarker);
@@ -75,6 +74,7 @@ fprintf(fpVTF,"1,2,3\n\n");
 
   while (1){
 
+            //Check if eof
           if( feof(fpGNU) ) {
               break;
             }//eo if
@@ -86,16 +86,16 @@ fprintf(fpVTF,"1,2,3\n\n");
             fprintf(fpVTF,"*RESULTS %d\n",counter);
             fprintf(fpVTF,"%%DIMENSION 3\n");
             fprintf(fpVTF,"%%PER_NODE #1\n");
-            fprintf(fpVTF,"0, %d, 0\n",pos);
-            fprintf(fpVTF,"0, %d, 0\n",pos);
-            fprintf(fpVTF,"0, %d, 0\n",pos);
-            fprintf(fpVTF,"0, %d, 0\n",pos);
-            fprintf(fpVTF,"0, %d, 0\n",pos);
-            fprintf(fpVTF,"0, %d, 0\n",pos);
-            fprintf(fpVTF,"0, %d, 0\n",pos);
-            fprintf(fpVTF,"0, %d, 0\n",pos);
-            fprintf(fpVTF,"0, %d, 0\n",pos);
-            fprintf(fpVTF,"0, %d, 0\n\n",pos);
+            fprintf(fpVTF,"0 %d 0\n",pos);
+            fprintf(fpVTF,"0 %d 0\n",pos);
+            fprintf(fpVTF,"0 %d 0\n",pos);
+            fprintf(fpVTF,"0 %d 0\n",pos);
+            fprintf(fpVTF,"0 %d 0\n",pos);
+            fprintf(fpVTF,"0 %d 0\n",pos);
+            fprintf(fpVTF,"0 %d 0\n",pos);
+            fprintf(fpVTF,"0 %d 0\n",pos);
+            fprintf(fpVTF,"0 %d 0\n",pos);
+            fprintf(fpVTF,"0 %d 0\n\n",pos);
 
 
         counter= counter+1;

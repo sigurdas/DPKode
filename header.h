@@ -5,5 +5,9 @@
 #include<phidget21.h>
 #include<ncurses.h>
 
-int pid_regulator(int *inp, int *ref, int *startpos, float *t, double *error, double *p_value, double *i_value, double *d_value);
+int pidRegulator( int *ref, float *t, double *error, double *pValue, double *iValue, double *dValue, double *filteredInp);
 float gettime(void);
+void closeDelete (CPhidgetInterfaceKitHandle sensor, CPhidgetServoHandle servo, FILE *fpGNU);
+int correctPIDOutput(double *pidOut);
+void initialize (int *STARTPOS, double *filteredInp, CPhidgetInterfaceKitHandle *sensor, CPhidgetServoHandle *servo);
+void filterInp(int *inp, double *filteredInp);
