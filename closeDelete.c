@@ -18,7 +18,7 @@ CPhidget_close                       Stenger kobling til Phidget
 CPhidget_delete                      Sletter kobling til Phidget
 -----------------------------------------------------------------------------
 Programmert av                                          Sigurd Aurvaag Soerum
-Date                                                               03.05.2016
+Date                                                               28.04.2016
 *****************************************************************************
 */
 void closeDelete (CPhidgetInterfaceKitHandle sensor, CPhidgetServoHandle servo){
