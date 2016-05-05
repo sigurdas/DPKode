@@ -3,7 +3,23 @@
 #include<math.h>
 #include<unistd.h>
 #include<time.h>
-
+/*
+------------------------------------------------------------------------------
+DP                            Subroutine                            makevtf
+-----------------------------------------------------------------------------
+Hensikt :
+ Lage kjørbar vtf-fil av resultatene fra posisjoneringen.
+Metode :
+ Konvertere data fra GNUres.dat til VTFres.vtf
+..............................................................................
+FUNKSJONER:                             Innhold/Beskrivelse
+ fscanf                      Henter ut data fra fil
+ feof                        Skjekk om man har nådd slutten av filen
+------------------------------------------------------------------------------
+Programmert av                                           Sigurd Aurvaag Soerum
+Date                                                                28.04.2016
+******************************************************************************
+*/
 int main(void){
 FILE *fpGNU =fopen("/home/sig/datamet/GNUres.dat","r");
 FILE *fpVTF =fopen("/home/sig/datamet/VTFres.vtf","w");
