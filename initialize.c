@@ -30,7 +30,7 @@ typeResponse                            Hvordan type respons bruker ønsker
 
 ------------------------------------------------------------------------------
 Programmert av                                           Sigurd Aurvaag Soerum
-Date                                                                03.05.2016
+Date                                                                28.04.2016
 ******************************************************************************
 */
 void initialize(double *kp, double *ki, double *kd, int *STARTPOS, double *filteredInp, CPhidgetInterfaceKitHandle *sensor, CPhidgetServoHandle *servo, int *refcm) {
