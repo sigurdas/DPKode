@@ -1,5 +1,5 @@
 //#pragma once
-
+/*fuckboi*/
 #include"header.h"
 
 struct timespec tiem;
